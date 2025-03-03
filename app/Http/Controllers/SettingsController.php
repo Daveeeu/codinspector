@@ -9,19 +9,23 @@ use App\Models\ApiSetting;
 
 class SettingsController extends Controller
 {
-    public function showForm()
+    public function showForm(Request $request)
     {
         // Lekérjük az aktuális bolt domainjét és tokenjét
-        $shopDomain = 'uvclone.myshopify.com';
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
         $shop = Shop::where('shop_domain', $shopDomain)->first();
         $settingsData = ApiSetting::where('shop_domain', $shopDomain)->first();
 
         if (!$shop) {
-            return back()->withErrors(['error' => 'Shop not found']);
+            $settingsData = [
+                "api_domain" => "",
+                "api_key" => "",
+                "secret_api_key" => "",
+            ];
+            return view('settings-form', compact('settingsData'));
         }
-
         $accessToken = $shop->access_token;
-
+        
         try {
             return view('settings-form', compact('settingsData'));
         } catch (\Exception $e) {
