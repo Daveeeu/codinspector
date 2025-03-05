@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('api_settings', function (Blueprint $table) {
-            $table->drop('success_tag');
-            $table->drop('reject_tag');
+            $table->dropColumn('success_tag');
+            $table->dropColumn('reject_tag');
         });
     }
 
