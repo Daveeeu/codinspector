@@ -26,7 +26,7 @@ class SettingsController extends Controller
             return view('settings-form', compact('settingsData'));
         }
         $accessToken = $shop->access_token;
-        
+        Log::info("settings". $settingsData);
         try {
             return view('settings-form', compact('settingsData'));
         } catch (\Exception $e) {
