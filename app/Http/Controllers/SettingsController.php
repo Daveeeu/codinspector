@@ -13,14 +13,23 @@ class SettingsController extends Controller
     public function showForm(Request $request)
     {
         // Lekérjük az aktuális bolt domainjét és tokenjét
-        $shopDomain = $request->header('X-Shopify-Shop-Domain');
+        // A shop domain értéke
+        $referer = $request->header('referer');
+        $shopDomain = '';
+        
+        if (preg_match('/shop=([^&]+)/', $referer, $matches)) {
+            $shopDomain = $matches[1];
+        }
+        
+        Log::info("Shopify domain: " . $shopDomain);
+                
         $shop = Shop::where('shop_domain', $shopDomain)->first();
         $settingsData = ApiSetting::where('shop_domain', $shopDomain)->first();
         Log::info("settings". $settingsData);
         Log::info("shop". $shop);
         Log::info("shopdomian". $shopDomain);
 
-        
+
 
         if (!$shop) {
             $settingsData = [
