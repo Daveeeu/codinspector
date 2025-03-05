@@ -69,11 +69,7 @@ class ShopifyController extends Controller
                     'body' => $webhookResponse->body(),
                     'headers' => $webhookResponse->headers(),
                 ]);
-                return response()->json([
-                    'message' => 'Failed to create webhook',
-                    'status' => $webhookResponse->status(),
-                    'body' => $webhookResponse->body(),
-                ], 500);            }
+            }
     
             return response('Shopify app installed and webhook added successfully!', 200);
         } catch (\Exception $e) {
