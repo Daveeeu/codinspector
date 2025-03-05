@@ -14,18 +14,8 @@ class SettingsController extends Controller
     {
         // Lekérjük az aktuális bolt domainjét és tokenjét
         $shopDomain = $request->query('shop');
-
-        
-        Log::info("Shopify domain: " . $shopDomain);
-                
         $shop = Shop::where('shop_domain', $shopDomain)->first();
         $settingsData = ApiSetting::where('shop_domain', $shopDomain)->first();
-        Log::info("settings". $settingsData);
-        Log::info("shop". $shop);
-        Log::info("shopdomian". $shopDomain);
-
-
-
         if (!$shop) {
             $settingsData = [
                 "api_domain" => "",
@@ -35,7 +25,7 @@ class SettingsController extends Controller
             return view('settings-form', compact('settingsData'));
         }
         $accessToken = $shop->access_token;
-        Log::info("settings". $settingsData);
+
         try {
             return view('settings-form', compact('settingsData'));
         } catch (\Exception $e) {
@@ -58,9 +48,7 @@ class SettingsController extends Controller
         if (preg_match('/shop=([^&]+)/', $referer, $matches)) {
             $shopDomain = $matches[1];
         }
-        
-        Log::info("Shopify domain: " . $shopDomain);
-        
+                
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
     

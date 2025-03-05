@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "948c38071ae3546b23ffac2b79cb3946"
+client_id = "a899f2a3dadc02216983d3b34d508c74"
 application_url = "https://api.codinspector.com/auth/callback"
 embedded = true
 name = "uv-clone-extension"
@@ -11,7 +11,7 @@ api_version = "2025-01"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,write_orders,read_products,write_products,write_script_tags,write_orders,write_assigned_fulfillment_orders,write_merchant_managed_fulfillment_orders,write_third_party_fulfillment_orders"
+scopes = "read_orders,write_orders,write_assigned_fulfillment_orders,write_merchant_managed_fulfillment_orders,write_third_party_fulfillment_orders"
 
 [auth]
 redirect_urls = [ "https://api.codinspector.com/auth/callback" ]

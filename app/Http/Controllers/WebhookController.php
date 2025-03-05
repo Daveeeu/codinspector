@@ -19,7 +19,6 @@ class WebhookController extends Controller
      */
     public function handleOrderUpdated(Request $request)
     {
-        Log::info($request->header('X-Shopify-Shop-Domain'));
         $shopifyOrderId = $request->input('admin_graphql_api_id');
         $existingOrder = DB::table('orders')->where('order_id', $shopifyOrderId)->first();
 
@@ -83,7 +82,6 @@ private function handleExistingOrder(Request $request, object $existingOrder)
 
         if ($response->successful()) {
             $thresholdData = $response->json();
-            Log::info($thresholdData);
             DB::table('orders')->insert([
                 'order_id' => $orderId,
                 'status' => $thresholdData['status'],
