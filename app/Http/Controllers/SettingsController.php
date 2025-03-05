@@ -21,6 +21,7 @@ class SettingsController extends Controller
         Log::info("shopdomian". $shopDomain);
 
         
+
         if (!$shop) {
             $settingsData = [
                 "api_domain" => "",
