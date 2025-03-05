@@ -167,10 +167,12 @@ private function handleExistingOrder(Request $request, object $existingOrder)
      */
     private function fetchThresholdData(Request $request)
     {
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
+        $settings = ApiSetting::where('shop_domain', $shopDomain)->first();
         return Http::withHeaders([
-            'X-Api-Key' => '123',
-            'X-Api-Secret' => '123',
-        ])->get('https://inspectorramburs.ro/api/threshold', [
+            'X-Api-Key' => $settings['api_key'],
+            'X-Api-Secret' => $settings['secret_api_key'],
+        ])->get('https://' . $settings['api_domain'] . '/api/threshold', [
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
         ]);

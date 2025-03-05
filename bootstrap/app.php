@@ -14,9 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(
             except: [
-                'settings', // Az adott útvonal kivétele
+                'settings',
             ]
         );
+        $middleware->append(\App\Http\Middleware\RemoveXFrameOptions::class);
+        $middleware->append(\App\Http\Middleware\SetContentSecurityPolicy::class);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
