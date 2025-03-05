@@ -43,17 +43,15 @@ class SettingsController extends Controller
         ]);
     
         // A shop domain értéke
-        $shopDomain = $request->header('X-Shopify-Shop-Domain');
-
-        $domain = $request->input('shop_domain');
-
-        Log::info("Full request:", [
-            'headers' => $request->headers->all(),
-            'query' => $request->query(),
-            'input' => $request->input()
-        ]);        
-        Log::info("Domain: " . $domain);
-            
+        $referer = $request->header('referer');
+        $shopDomain = '';
+        
+        if (preg_match('/shop=([^&]+)/', $referer, $matches)) {
+            $shopDomain = $matches[1];
+        }
+        
+        Log::info("Shopify domain: " . $shopDomain);
+        
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
     
