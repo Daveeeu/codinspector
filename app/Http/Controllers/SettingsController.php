@@ -16,7 +16,9 @@ class SettingsController extends Controller
         $shopDomain = $request->header('X-Shopify-Shop-Domain');
         $shop = Shop::where('shop_domain', $shopDomain)->first();
         $settingsData = ApiSetting::where('shop_domain', $shopDomain)->first();
-
+        Log::info("settings". $settingsData);
+        Log::info("shop". $shop);
+        Log::info("shopdomian". $shopDomain);
         if (!$shop) {
             $settingsData = [
                 "api_domain" => "",
