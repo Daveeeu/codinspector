@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Shop; // Feltételezve, hogy van egy Shop modell az adatok tárolására
+use Illuminate\Support\Facades\Log;
 
 class ShopifyController extends Controller
 {
@@ -63,6 +64,7 @@ class ShopifyController extends Controller
             ]);
     
             if ($webhookResponse->failed()) {
+                Log::info($webhookResponse->failed());
                 return response('Failed to create webhook', 500);
             }
     
