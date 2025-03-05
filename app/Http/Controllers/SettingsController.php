@@ -45,9 +45,9 @@ class SettingsController extends Controller
         // A shop domain értéke
         $shopDomain = $request->header('X-Shopify-Shop-Domain');
 
-        $domain =  $request->get('shop');
+        $domain = $request->input('shop_domain');
 
-        Log::info("domain: ".$shopDomain . "sec". $domain);
+        Log::info("domain: ".$request->all() . "sec". $domain);
     
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
