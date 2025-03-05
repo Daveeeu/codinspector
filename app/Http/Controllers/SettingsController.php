@@ -47,8 +47,9 @@ class SettingsController extends Controller
 
         $domain = $request->input('shop_domain');
 
-        Log::info("domain: ".$request->all() . "sec". $domain);
-    
+        Log::info("Request data: " . json_encode($request->all()));
+        Log::info("Domain: " . $domain);
+            
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
     
