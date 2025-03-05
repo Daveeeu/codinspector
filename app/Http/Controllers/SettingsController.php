@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Shop;
 use App\Models\ApiSetting;
+use Illuminate\Support\Facades\Log;
 
 class SettingsController extends Controller
 {
@@ -43,6 +44,10 @@ class SettingsController extends Controller
     
         // A shop domain értéke
         $shopDomain = $request->header('X-Shopify-Shop-Domain');
+
+        $domain = $request->host();
+
+        Log::info("domain: ".$shopDomain . "sec". $domain);
     
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
