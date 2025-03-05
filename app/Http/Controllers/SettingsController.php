@@ -12,6 +12,12 @@ class SettingsController extends Controller
 {
     public function showForm(Request $request)
     {
+        Log::info("Full request:", [
+            'headers' => $request->headers->all(),
+            'query' => $request->query(),
+            'input' => $request->input()
+        ]);
+        
         // Lekérjük az aktuális bolt domainjét és tokenjét
         // A shop domain értéke
         $referer = $request->header('referer');
