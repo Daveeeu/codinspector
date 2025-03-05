@@ -64,8 +64,12 @@ class ShopifyController extends Controller
             ]);
     
             if ($webhookResponse->failed()) {
-                Log::info($webhookResponse->failed());
-                return response('Failed to create webhook'. json_encode($webhookResponse->failed()), 500);
+                Log::error('Webhook creation failed:', [
+                    'status' => $webhookResponse->status(),
+                    'body' => $webhookResponse->body(),
+                    'headers' => $webhookResponse->headers(),
+                ]);
+                            return response('Failed to create webhook'. json_encode($webhookResponse->failed()), 500);
             }
     
             return response('Shopify app installed and webhook added successfully!', 200);
