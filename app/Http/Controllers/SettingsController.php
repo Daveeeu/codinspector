@@ -44,7 +44,7 @@ class SettingsController extends Controller
         ]);
     
         // A shop domain értéke
-        $shopDomain = 'uvclone.myshopify.com';
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
     
         // Hozzáadjuk a shop_domain-t az adatokhoz
         $data['shop_domain'] = $shopDomain;
