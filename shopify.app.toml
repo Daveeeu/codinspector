@@ -3,8 +3,8 @@
 client_id = "a899f2a3dadc02216983d3b34d508c74"
 application_url = "https://api.codinspector.com/auth/callback"
 embedded = true
-name = "uv-clone-extension"
-handle = "uv-clone-extension"
+name = "codinspector"
+handle = "codinspector"
 
 [webhooks]
 api_version = "2025-01"

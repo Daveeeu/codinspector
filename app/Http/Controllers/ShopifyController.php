@@ -23,10 +23,10 @@ class ShopifyController extends Controller
         if (!$request->has('shop') || !$request->has('code')) {
             return response('Missing required parameters', 400);
         }
-
+    
         $shop = $request->input('shop');
         $code = $request->input('code');
-
+    
         try {
             // Token lekérése a Shopify API-tól
             $response = Http::post("https://{$shop}/admin/oauth/access_token", [
@@ -34,27 +34,44 @@ class ShopifyController extends Controller
                 'client_secret' => env('SHOPIFY_API_SECRET'),
                 'code' => $code,
             ]);
-
+    
             // Ellenőrizd a válasz sikerességét
             if ($response->failed()) {
                 return response('Failed to fetch access token', 500);
             }
-
+    
             // Token kinyerése a válaszból
             $data = $response->json();
             $accessToken = $data['access_token'];
-
+    
             // Token mentése az adatbázisba
             Shop::updateOrCreate(
                 ['shop_domain' => $shop], // Egyedi azonosító (pl. shop domain)
                 ['access_token' => $accessToken] // Frissítendő adatok
             );
-
-            return response('Shopify app installed successfully!', 200);
+    
+            // Webhook hozzáadása
+            $webhookResponse = Http::withHeaders([
+                'X-Shopify-Access-Token' => $accessToken,
+                'Content-Type' => 'application/json',
+            ])->post("https://{$shop}/admin/api/2024-01/webhooks.json", [
+                'webhook' => [
+                    'topic' => 'orders/update', // Az esemény típusa (pl. Order update)
+                    'address' => 'https://api.codinspector.com/api/webhook/order-updated', // A webhook URL-je
+                    'format' => 'json',
+                ]
+            ]);
+    
+            if ($webhookResponse->failed()) {
+                return response('Failed to create webhook', 500);
+            }
+    
+            return response('Shopify app installed and webhook added successfully!', 200);
         } catch (\Exception $e) {
             return response('Error during Shopify callback: ' . $e->getMessage(), 500);
         }
     }
+    
 
 
 }
