@@ -57,7 +57,7 @@ class ShopifyController extends Controller
                 'Content-Type' => 'application/json',
             ])->post("https://{$shop}/admin/api/2024-01/webhooks.json", [
                 'webhook' => [
-                    'topic' => 'orders/update', // Az esemény típusa (pl. Order update)
+                    'topic' => 'orders/updated', // Az esemény típusa (pl. Order update)
                     'address' => 'https://api.codinspector.com/api/webhook/order-updated', // A webhook URL-je
                     'format' => 'json',
                 ]
@@ -69,8 +69,11 @@ class ShopifyController extends Controller
                     'body' => $webhookResponse->body(),
                     'headers' => $webhookResponse->headers(),
                 ]);
-                            return response('Failed to create webhook'. json_encode($webhookResponse->failed()), 500);
-            }
+                return response()->json([
+                    'message' => 'Failed to create webhook',
+                    'status' => $webhookResponse->status(),
+                    'body' => $webhookResponse->body(),
+                ], 500);            }
     
             return response('Shopify app installed and webhook added successfully!', 200);
         } catch (\Exception $e) {
