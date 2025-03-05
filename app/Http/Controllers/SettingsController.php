@@ -39,8 +39,6 @@ class SettingsController extends Controller
             'api_domain'      => 'required|string',
             'api_key'         => 'required|string',
             'secret_api_key'  => 'required|string',
-            'success_tag'     => 'required|string',
-            'reject_tag'      => 'required|string',
         ]);
     
         // A shop domain értéke
