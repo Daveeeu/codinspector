@@ -81,17 +81,19 @@ private function handleExistingOrder(Request $request, object $existingOrder)
         $response = $this->fetchThresholdData($request);
 
         if ($response->successful()) {
+            $shopDomain = $request->header('X-Shopify-Shop-Domain');
             $thresholdData = $response->json();
             DB::table('orders')->insert([
                 'order_id' => $orderId,
                 'status' => $thresholdData['status'],
                 'threshold' => $thresholdData['threshold'],
+                'shop_domain' => $shopDomain,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             if($thresholdData['status'] == "0"){
-                $shopDomain = $request->header('X-Shopify-Shop-Domain');
+            
 
                 $this->addOrderRisk($request->input('id'), $shopDomain);
                 $this->placeOrderOnHold($request->input('id'), $shopDomain);
