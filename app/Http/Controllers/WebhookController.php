@@ -395,4 +395,38 @@ private function handleExistingOrder(Request $request, object $existingOrder)
             return null;
         }
     }
+
+
+    /**
+     * Kezeli az ügyfél adatlekérési kéréseit (customers/data_request).
+     */
+    public function handleCustomerDataRequest(Request $request)
+    {
+    
+        return response()->json(['error' => "We don't store user data"], 400);
+    }
+
+    /**
+     * Kezeli az ügyfél adatainak törlési kéréseit (customers/redact).
+     */
+    public function handleCustomerDataErasure(Request $request)
+    {
+        return response()->json(['error' => "We don't store user data"], 400);
+    }
+
+    /**
+     * Kezeli a bolt adatainak törlési kéréseit (shop/redact).
+     */
+    public function handleShopDataErasure(Request $request)
+    {
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
+        Log::info("Shop data erasure request received for shop: {$shopDomain}");
+
+        // A bolt adatok törlése az adatbázisból
+        Shop::where('shop_domain', $shopDomain)->delete();
+
+        DB::table('orders')->where('shop_domain', $shopDomain)->delete();
+
+        return response()->json(['message' => 'Shop data erased successfully'], 200);
+    }
 }
