@@ -400,12 +400,48 @@ private function handleExistingOrder(Request $request, object $existingOrder)
 
 
     /**
+     * Ellenőrzi a webhook hitelességét HMAC segítségével.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    private function verifyWebhook(Request $request): bool
+    {
+        $hmacHeader = $request->header('X-Shopify-Hmac-Sha256');
+        $data = file_get_contents('php://input');
+        $calculatedHmac = base64_encode(hash_hmac('sha256', $data, env('SHOPIFY_WEBHOOK_SECRET'), true));
+
+        return hash_equals($calculatedHmac, $hmacHeader);
+    }
+
+    /**
      * Kezeli az ügyfél adatlekérési kéréseit (customers/data_request).
      */
     public function handleCustomerDataRequest(Request $request)
     {
-    
-        return response()->json(['error' => "We don't store user data"], 400);
+        if (!$this->verifyWebhook($request)) {
+            Log::error('Invalid HMAC signature for customer data request.');
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
+        Log::info("Customer data request received for shop: {$shopDomain}");
+
+        // Az ügyfél adatainak lekérése az adatbázisból
+        $customerEmail = $request->input('customer')['email'] ?? null;
+
+        if ($customerEmail) {
+            $customerOrders = DB::table('orders')->where('email', $customerEmail)->get();
+
+            return response()->json([
+                'customer_data' => [
+                    'email' => $customerEmail,
+                    'orders' => $customerOrders,
+                ],
+            ], 200);
+        }
+
+        return response()->json(['error' => 'Customer email is missing'], 400);
     }
 
     /**
@@ -413,7 +449,23 @@ private function handleExistingOrder(Request $request, object $existingOrder)
      */
     public function handleCustomerDataErasure(Request $request)
     {
-        return response()->json(['error' => "We don't store user data"], 400);
+        if (!$this->verifyWebhook($request)) {
+            Log::error('Invalid HMAC signature for customer data erasure.');
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $shopDomain = $request->header('X-Shopify-Shop-Domain');
+        Log::info("Customer data erasure request received for shop: {$shopDomain}");
+
+        // Az ügyfél adatok törlése az adatbázisból
+        $customerEmail = $request->input('customer')['email'] ?? null;
+
+        if ($customerEmail) {
+            DB::table('orders')->where('email', $customerEmail)->delete();
+            return response()->json(['message' => 'Customer data erased successfully'], 200);
+        }
+
+        return response()->json(['error' => 'Customer email is missing'], 400);
     }
 
     /**
@@ -421,12 +473,16 @@ private function handleExistingOrder(Request $request, object $existingOrder)
      */
     public function handleShopDataErasure(Request $request)
     {
+        if (!$this->verifyWebhook($request)) {
+            Log::error('Invalid HMAC signature for shop data erasure.');
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         $shopDomain = $request->header('X-Shopify-Shop-Domain');
         Log::info("Shop data erasure request received for shop: {$shopDomain}");
 
         // A bolt adatok törlése az adatbázisból
         Shop::where('shop_domain', $shopDomain)->delete();
-
         DB::table('orders')->where('shop_domain', $shopDomain)->delete();
 
         return response()->json(['message' => 'Shop data erased successfully'], 200);
